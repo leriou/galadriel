@@ -35,4 +35,5 @@ if __name__ == '__main__':
     m = Fib()
 
     for c in range(1,40):
-        print(m.recursion(c,0,1))
+        # print(m.recursion(c,0,1))
+        print(m.normal(c))

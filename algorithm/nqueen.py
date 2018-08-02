@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import fire
 
 class Nqueen:
 
@@ -52,5 +53,5 @@ class Nqueen:
 
 
 if __name__ == "__main__":
-    n = Nqueen(8)
-    n.main()
+    # python3 nqueen main
+    fire.Fire(Nqueen(8))

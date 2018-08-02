@@ -1,6 +1,8 @@
-# Python_tarven
+# Galadriel
 
-个人用来学习python的一些实例
+Galadriel 是我很喜欢的一个人物角色, 出自<<The Silmarillion>> (精灵宝钻)
+
+使用此名字来命名我的这个代码仓库
 
 ## 安装
 
@@ -11,3 +13,10 @@
 安装依赖:  `pipenv install`
 
 运行: `pipenv run python3 xxxx.py`
+
+> ps: 可以使用 alias prp = pipenv run python3 来简化操作
+
+## 代码列表
+
+
+
