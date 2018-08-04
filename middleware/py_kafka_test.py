@@ -1,8 +1,5 @@
 from pykafka import KafkaClient
 
-
-
-
 class KafkaManager:
 
     def __init__(self):
@@ -33,7 +30,7 @@ class KafkaManager:
 
         c = self.getConsumer()
         for i in c:
-            print("offset %s, value %s",(i.offset,i.value))    
+            print("offset: %s, value: %s",(i.offset,i.value))    
 
 if __name__ == "__main__":
     m = KafkaManager()
