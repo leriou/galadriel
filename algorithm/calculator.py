@@ -1,12 +1,14 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import math
 import time
 
-
 class Calculator:
 
-    num = 10
-    a = 1
-    res = 0
+    def __init__(self):
+        self.num = 10
+        self.a = 1
+        self.res = 0
 
     def getPi(self):
         for n in range(1, self.num):
@@ -29,9 +31,8 @@ class Calculator:
         return age
 
 
-c = Calculator()
-print( "年龄:%f " % c.getAge())
-
-print("e等于: %f " % c.getE())
-
-print("pi等于: %f " % c.getPi())
+if __name__ == "__main__":
+    c = Calculator()
+    print("age: %f " % c.getAge())
+    print("e为: %f " % c.getE())
+    print("pi等于: %f " % c.getPi())
