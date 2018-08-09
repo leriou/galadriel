@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+
 import requests
 
 import time
@@ -12,7 +15,7 @@ h = {"content-type":"application/json"}
 
 ret = requests.post(url,headers=h, data = params)
 
-print(params)
+# print(params)
 
 print(ret.text)
 

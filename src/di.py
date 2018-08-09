@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
@@ -6,37 +5,58 @@ from pymongo import MongoClient
 import redis
 import pymysql as mysql
 import elasticsearch
-import config
+import re
 
 '''
 依赖注入
 '''
 
+class ConfigParser():
 
-class Di:
+    def getConfigMap(self, filename):
+        f = open(filename,"r")
+        res = {}
+        pSection = r'^\[(.*)\]$'
+        pValue = r'^(.*)=(.*)$'
+        sectionContent = None
+        sectionName = None
+        for line in f.readlines():
+            line = line.strip()
+            if re.match(pSection,line):
+                sectionName = line.strip("[]")
+                sectionContent = {}.copy()
+                res[sectionName] = sectionContent
+            elif re.match(pValue,line): 
+                k = line.split("=")[0]
+                v = line.split("=")[1]
+                sectionContent[k] = v
+        f.close()
+        return res
+
+class Di():
 
     def __init__(self):
-        Di.config = config.ConfigParser().getContent("config.ini")
         Di.redis = None
         Di.mongodb = None
         Di.es = None
-
+        Di.config = ConfigParser().getConfigMap("/Users/lixiumeng/code-space/Galadriel/src/config.ini")
     # redis client
     def getRedis(self):
+        config = Di.config["redis"]
         if Di.redis == None:
-            Di.redis = redis.Redis(Di.config.get("redis", "host"),
-                                   int(Di.config.get("redis", "port")))
+            Di.redis = redis.Redis(config["host"],int(config["port"]))
         return Di.redis
 
     # mongodb client
     def getMongoDb(self):
+        config = Di.config["mongodb"]
         if Di.mongodb == None:
-            Di.mongodb = MongoClient(Di.config.get("mongodb", "host"),
-                                     int(Di.config.get("mongodb", "port")))
+            Di.mongodb = MongoClient(config["host"],int(config["port"]))
         return Di.mongodb
 
     # mysql client
     def getMysql(self):
+        config = Di.config["mysql"]
         if Di.mysql == None:
             Di.mysql = mysql.connect(host='127.0.0.1', port=3306, user='root', passwd='password')
         return Di.mysql.cursor()
@@ -69,4 +89,5 @@ class Di:
 
 if __name__ == '__main__':
     m = Di()
-    m.test('es')
+    m.test('mongodb')
+    # print(m.config)

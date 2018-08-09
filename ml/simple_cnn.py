@@ -29,8 +29,6 @@ y_test = np_utils.to_categorical(y_test)
 num_classes = y_test.shape[1]
 
 # 简单的CNN模型
-
-
 def baseline_model():
     # create model
     model = Sequential()
