@@ -216,8 +216,8 @@ class Bitmap:
 # 测试
 if __name__ == '__main__':
     bm = Bitmap()
-    # bm.init_db(10000)
-    # print(bm.key2array(bm.get("user:vip")))
+    bm.init_db(10000)
+    print(bm.key2array(bm.get("user:vip")))
     # bm.key2array2(bm.get("test_a"))
     # bm.key2array3(bm.get("test_a"))
     bm.benchmark()
