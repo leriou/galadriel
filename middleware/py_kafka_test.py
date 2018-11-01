@@ -22,7 +22,7 @@ class KafkaManager:
         return self.topic.get_simple_consumer()
 
     def test(self):
-        self.setTopic('test1_topic')
+        self.setTopic('py-topic')
         p = self.getProducer()
         for i in range(101,10000):
             p.produce(bytes("this is msg:" + str(i),encoding="utf8"))

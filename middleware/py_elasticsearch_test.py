@@ -1,5 +1,5 @@
 import elasticsearch
-
+import time
 
 class ElasticsearchManager:
 
@@ -7,7 +7,7 @@ class ElasticsearchManager:
         self.cli = elasticsearch.Elasticsearch(["localhost:9200"])
     
     def add(self):
-        self.cli.index(index="test_py",doc_type="match",body={"name":"test","age":10,"type":"test"})
+        self.cli.index(index="test_py",doc_type="match",body={"name":"test","age":10,"type":"test","subs":[1,2,3,4],"update_time":time.time()})
     
     def search(self):
         print(self.cli.search(index="test_py", doc_type="match",body={"query":{"match_all":{}},"size":20} ))
