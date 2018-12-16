@@ -1,4 +1,7 @@
-import di
+
+import sys 
+sys.path.append("..") 
+from tools import di
 
 class DistributeLock:
 
@@ -16,7 +19,6 @@ class DistributeLock:
         self.redis.expire(key,-1)
         return True
     
-
 
 lock = DistributeLock()
 

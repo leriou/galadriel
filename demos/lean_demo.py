@@ -12,3 +12,4 @@ m = Visitors()
 m.set("ioo","91001")
 m.set("age","123456")
 m.save()
+ 

@@ -8,7 +8,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('10.113.1.231',7001))
 
 
-def rstp(s):
+def resp_tras(s):
     res = []
     res.append("*"+str(len(s.split())))
     for n in s.split():

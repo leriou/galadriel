@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import sys
-sys.path.append("")
-
+import sys 
+sys.path.append("..") 
 from tools.di import *
 import random
 import time

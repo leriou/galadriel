@@ -26,28 +26,29 @@ class TaskManager:
     
     def multi_proccess(self):
         print('Parent process %s.' % os.getpid())
-        p = Pool(4)
+        p = Pool(2)
         for i in range(5):
             p.apply_async(TaskManager.long_time_task,args=(self,i))
+            
         print('Waiting for all subprocesses done...')
         p.close()
         p.join()
         print('All subprocesses done.')
 
     def run(self):
-        self.multi_proccess()
-        # self.useQueue()
+        # self.multi_proccess()
+        self.use_queue()
 
-    def useQueue(self):
+    def use_queue(self):
         queue = mul.JoinableQueue()
         for c in range(1, 100, 2):
-            self.addToQueue(c, c + 1, queue)
+            self.add_to_queue(c, c + 1, queue)
         while self.loop:
             if queue.get(True) > 90:
                 self.loop = False
         print("result->", self.sum_res)
 
-    def addToQueue(self, a, b, q):
+    def add_to_queue(self, a, b, q):
         self.add(a, b)
         q.put(a)
 

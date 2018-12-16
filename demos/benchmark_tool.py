@@ -28,7 +28,6 @@ class BenchMark:
                 n += 1
                 self.current = time.time()
 
-
     def isFullSec(self):
         if (self.current - self.last > self.time_limit):
             self.last = time.time()

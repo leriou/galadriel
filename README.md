@@ -20,5 +20,3 @@ Galadriel 是我很喜欢的一个人物角色, 出自<<The Silmarillion>> (精�
 
 ## 代码列表
 
-
-

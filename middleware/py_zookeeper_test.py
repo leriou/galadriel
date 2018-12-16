@@ -1,6 +1,5 @@
 from kazoo.client import KazooClient
 
-
 class ZkClient:
 
     def __init__(self):
