@@ -3,7 +3,7 @@
 
 import sys 
 sys.path.append("..") 
-from tools.di import *
+from tools import di
 import random
 import time
 
@@ -45,27 +45,29 @@ class Bitmap:
         user_list = []
         for i in range(1, n):
             data = {
-                "id": i,
-                "member": self.get_random(),  # 是否会员
-                "vip": self.get_random(),  # 是否vip
-                "sex": self.get_random(),  # 性别
-                "coder": self.get_random(),  # 是否程序员
-                "rapper": self.get_random(),  # 是否说唱歌手
-                "mac": self.get_random(),
-                "supervip": self.get_random()
+                "uid": i,
+                "name":"user_" + str(i),
+                "isMember": self.get_random(),  # 是否会员
+                "isVip": self.get_random(),  # 是否vip
+                "gender": self.get_random(),  # 性别
+                "isMobile": self.get_random(),  # 是否程序员
+                "isEmail": self.get_random(),  # 是否说唱歌手
+                "isMac": self.get_random(),
+                "isSupervip": self.get_random()
             }
             user_list.append(data)
-            self.redis.setbit("user:all", i, data['id'])
-            self.redis.setbit("user:member", i, data['member'])
-            self.redis.setbit("user:vip", i, data['vip'])
-            self.redis.setbit("user:coder", i, data['coder'])
-            self.redis.setbit("user:rapper", i, data['rapper'])
-            self.redis.setbit("user:supervip", i, data['supervip'])
-            if data['sex'] == 1:
-                sex_key = "user:sex_female"
+            self.redis.setbit("user:all", i, data['uid'])
+            self.redis.setbit("user:member", i, data['isMember'])
+            self.redis.setbit("user:vip", i, data['isVip'])
+            self.redis.setbit("user:mobile", i, data['isMobile'])
+            self.redis.setbit("user:mac", i, data['isMac'])
+            self.redis.setbit("user:supervip", i, data['isSupervip'])
+            self.redis.setbit("user:email", i , data["isEmail"] )
+            if data['gender'] == 1:
+                gender_key = "user:gender_female"
             else:
-                sex_key = "user:sex_male"
-            self.redis.setbit(sex_key, i, 1)
+                gender_key = "user:gender_male"
+            self.redis.setbit(gender_key, i, 1)
             print("done:", i)
         db.insert(user_list)
 
