@@ -6,16 +6,11 @@ class ElasticsearchManager:
 
     def __init__(self):
         self.cli = elasticsearch.Elasticsearch(["localhost:9200"])
-    
-    def add(self):
-        # self.cli.index(index="test_py",doc_type="match",body={"name":"test","age":10,"type":"test","subs":[1,2,3,4],"update_time":time.time()})
-        self.cli.index(index="test_py",doc_type="match",body={"name":"test","age":10,"type":"test","subs":[1,2,3,4],"update_time":time.time()})
+        self.data = []
+        self.index = "test_data"
+        self.type = "_doc"
 
-    def search(self):
-        print(self.cli.search(index="test_py", doc_type="match",body={"query":{"match_all":{}},"size":20} ))
-
-    def test(self):
-        self.add()
+    def init_data(self):
         for i in range(0,1000):
             info = {
                 "id":uuid.uuid1(),
@@ -23,12 +18,32 @@ class ElasticsearchManager:
                 "name": str(i) +"ming",
                 "age": 9
             }
-            self.cli.create(index="test-py-2",doc_type="test-infos",body=info,id=info["id"])
-            self.cli.index(index="test-py-1",doc_type="test-infos",body=info)
+            self.data.append(info)
+
+    def add(self):
+        for rec in self.data:
+            self.cli.index(index=self.index, doc_type=self.type, body=rec)
+
+    def bulk(self):
+        bulk = []
+        for c in self.data:
+            bulk.append({
+                "index":{
+                    "_index":self.index,
+                    "_type":self.type
+                    }
+            })
+            bulk.append(c)
+        self.cli.bulk(bulk)
+
+    def search(self):
+        print(self.cli.search(index=self.index, doc_type=self.type,body={"query":{"match_all":{}},"size":20} ))
+
+    def test(self):
+        self.init_data()
+        self.bulk()
         self.search()
     
-    def delete(self):
-        self.cli.delete_by_query(index="score_test",doc_type="text",query={"query":{"match":{"content":"测试"}}})
 
 if __name__ == "__main__":
     e = ElasticsearchManager()

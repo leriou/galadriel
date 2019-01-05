@@ -1,0 +1,16 @@
+pymongo
+redis
+numpy
+keras
+tensorflow
+requests
+configparser
+sanic
+requestium
+matplotlib
+elasticsearch
+beautifulsoup4
+pykafka
+jieba
+neo4j
+pyecharts
