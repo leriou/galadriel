@@ -7,7 +7,6 @@ from tools import di
 import random
 import time
 
-
 '''
 基于Bitmap算法的会员标签匹配
 
@@ -32,17 +31,30 @@ user:vip: 010101010000110
 class Bitmap:
 
     def __init__(self):
-        self.redis = di.Di().getRedis()
-        self.mongo = di.Di().getMongoDb()
-        self.set_bit_table()
+        self.di = di.Di()
+        self.redis = self.di.getRedis()
+        self.mongo = self.di.getMongoDb()
+        self._init_bittable()
+        self.key_map = [
+            "user:all",
+            "user:member",
+            "user:vip",
+            "user:mobile",
+            "user:mac",
+            "user:supervip",
+            "user:gender_female",
+            "user:gender_male",
+            "user:email"
+        ]
 
     def get_random(self):
-        return (int)(random.random() < 0.49)
+        return (int)(random.random() < 0.499999)
 
     def init_db(self, n):
         db = self.mongo["bitmap"]["user"]
         uid = 1
         user_list = []
+        pipe = self.redis.pipeline()
         for i in range(1, n):
             data = {
                 "uid": i,
@@ -56,22 +68,24 @@ class Bitmap:
                 "isSupervip": self.get_random()
             }
             user_list.append(data)
-            self.redis.setbit("user:all", i, data['uid'])
-            self.redis.setbit("user:member", i, data['isMember'])
-            self.redis.setbit("user:vip", i, data['isVip'])
-            self.redis.setbit("user:mobile", i, data['isMobile'])
-            self.redis.setbit("user:mac", i, data['isMac'])
-            self.redis.setbit("user:supervip", i, data['isSupervip'])
-            self.redis.setbit("user:email", i , data["isEmail"] )
+            pipe.setbit("user:all", i, data['uid'])
+            pipe.setbit("user:member", i, data['isMember'])
+            pipe.setbit("user:vip", i, data['isVip'])
+            pipe.setbit("user:mobile", i, data['isMobile'])
+            pipe.setbit("user:mac", i, data['isMac'])
+            pipe.setbit("user:supervip", i, data['isSupervip'])
+            pipe.setbit("user:email", i , data["isEmail"] )
             if data['gender'] == 1:
                 gender_key = "user:gender_female"
             else:
                 gender_key = "user:gender_male"
-            self.redis.setbit(gender_key, i, 1)
-            print("done:", i)
-        db.insert(user_list)
+            pipe.setbit(gender_key, i, 1)
+            if i % 1000 == 0:
+                print(i)
+        pipe.execute()
+        db.insert_many(user_list)
 
-    def set_bit_table(self):
+    def _init_bittable(self):
         self.bit_table = [[], [8], [7], [7, 8], [6], [6, 8], [6, 7], [6, 7, 8], [5], [5, 8], [5, 7],[5, 7, 8], [5, 6], [5, 6, 8], [5, 6, 7], [5, 6, 7, 8], [4], [4, 8], [4, 7], [4, 7, 8],[4, 6], [4, 6, 8], [4, 6, 7], [4, 6, 7, 8], [4, 5], [4, 5, 8], [4, 5, 7], [4, 5, 7, 8], [4, 5, 6],[4, 5, 6, 8], [4, 5, 6, 7], [4, 5, 6, 7, 8], [3], [3,8], [3, 7],[3, 7, 8], [3, 6], [3, 6, 8], [3, 6, 7], [
                               3, 6, 7, 8], [3, 5], [3, 5, 8], [3, 5, 7],
                           [3, 5, 7, 8], [3, 5, 6], [3, 5, 6, 8], [
@@ -155,7 +169,6 @@ class Bitmap:
 
     def key2array(self, key):  # 将二进制('\x05'->'0b00000101')变为数组[5,7], 表示第五位和第七位为1
         tmpstr = ''.join([bin(i).replace('0b', '').zfill(8) for i in key])
-        # print(tmpstr)
         arr = []
         str_len = len(tmpstr)
         for i in range(0, str_len):
@@ -183,30 +196,21 @@ class Bitmap:
             pos = self.bit_table[i]
             for k in pos:
                 arr.append(n + k - 1)
-            n = n + 8
+            n += 8
         return (arr)
-    # 耗费的时间
-
-    def cost(self, tag):
-        if tag == 'start':
-            self.start = time.time()
-            print("start:", self.start)
-        else:
-            self.end = time.time()
-            print("cost time:", self.end - self.start ," s")
 
     # 性能测试
     def benchmark(self):
-        key = self.get("user:vip")
-        self.cost("start")
-        self.key2array(key)
-        self.cost("end")
-        self.cost("start")
-        self.key2array2(key)
-        self.cost("end")
-        self.cost("start")
-        self.key2array3(key)
-        self.cost("end")
+        self.di.cost("start------第一种方法")
+        for key in self.key_map:
+            self.key2array(self.get(key))
+        self.di.cost("start------第二种方法")
+        for key in self.key_map:
+            self.key2array2(self.get(key))
+        self.di.cost("start-----第三种方法")
+        for key in self.key_map:
+            self.key2array3(self.get(key))
+        self.di.cost("end")
 
     def str2bin(self, str):
         return bin(int(str, 10))
@@ -220,8 +224,8 @@ class Bitmap:
 # 测试
 if __name__ == '__main__':
     bm = Bitmap()
-    bm.init_db(10000)
-    print(bm.key2array(bm.get("user:vip")))
+    bm.init_db(1000)
+    # print(bm.key2array(bm.get("user:vip")))
     # bm.key2array2(bm.get("test_a"))
     # bm.key2array3(bm.get("test_a"))
-    bm.benchmark()
+    # bm.benchmark()

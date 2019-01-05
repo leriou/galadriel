@@ -3,9 +3,10 @@
 
 from pymongo import MongoClient
 import redis
-import pymysql as mysql
+# import pymysql as mysql
 import elasticsearch
 import re
+import time
 
 '''
 依赖注入
@@ -39,7 +40,10 @@ class Di():
         Di.redis = None
         Di.mongodb = None
         Di.es = None
-        Di.config = ConfigParser().getConfigMap("/Users/lixiumeng/code-space/Galadriel/config/config.ini")
+        Di.config = ConfigParser().getConfigMap("/Users/lixiumeng/code/Galadriel/config/config.ini")
+        self.start = time.time()
+        self.end = time.time()
+
     # redis client
     def getRedis(self):
         config = Di.config["redis"]
@@ -55,11 +59,11 @@ class Di():
         return Di.mongodb
 
     # mysql client
-    def getMysql(self):
-        config = Di.config["mysql"]
-        if Di.mysql == None:
-            Di.mysql = mysql.connect(host='127.0.0.1', port=3306, user='root', passwd='password')
-        return Di.mysql.cursor()
+    # def getMysql(self):
+    #     config = Di.config["mysql"]
+    #     if Di.mysql == None:
+    #         Di.mysql = mysql.connect(host='127.0.0.1', port=3306, user='root', passwd='password')
+    #     return Di.mysql.cursor()
 
     def getElasticsearch(self):
         if Di.es == None:
@@ -85,6 +89,30 @@ class Di():
             cli = self.getMysql()
             data = 'success'
         print(data)
+    
+    # 往某文件写入内容
+    def log(self,filename,content):
+        fh = open(filename,"w+")
+        fh.write(content)
+        fh.close()
+
+    def get_time(self):
+        return self.time2str(time.time())
+    
+    def str2time(self,i):
+        return time.mktime(time.strptime(i,"%Y-%m-%d %H:%M:%S"))
+    
+    def time2str(self,moment):
+        return time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(moment))
+        
+    def cost(self, log=''):
+        tmp = time.time()
+        total, last = tmp - self.start, tmp - self.end
+        self.end = tmp
+        self.logging("INFO","%s 总消耗时间:%s s,距上次%s s" % (log, total, last))
+
+    def logging(self,level,msg):
+        print("%s [%s]: %s" % (self.get_time(),level,msg))
 
 
 if __name__ == '__main__':
