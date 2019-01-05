@@ -14,10 +14,12 @@ class Migrate():
     def source(self, db, collection):
         self.source_db = db
         self.source_collection = collection
+        return self
     
     def target(self, index, doc_type):
         self.index = index
         self.type = doc_type
+        return self
     
     def _migrate(self):
         migrate = []
@@ -27,30 +29,31 @@ class Migrate():
                     "_index":self.index,
                     "_type":self.type
                     }
-            })
-            if c["_id"] not None:
-                c["id"] = c["_id"]
-                c.pop("_id")
+            })     
+            # c["id"] = c["_id"]           
+            c.pop("_id")
             migrate.append(c)
         self.es.bulk(migrate)
-
+                
     def get_source_data(self):
         self.data = []
         result = self.mongo[self.source_db][self.source_collection].find({})
         for n in result:
-            self.data.append(n)        
+            self.data.append(n)  
+        return self      
 
     def execute(self):
-        self.get_source_data()
-        self._migrate()
+        self.get_source_data()._migrate()
 
 m = Migrate()
-m.source("fzdm","mh_list")
-m.target("fzdm-mh-list","list")
-m.execute()
-m.source("fzdm","mh_pic")
-m.target("fzdm-mh-pic","pic")
-m.execute()
-m.source("fzdm","mh_subs")
-m.target("fzdm-mh-subs","subs")
-m.execute()
+# m.source("fzdm","mh_list")
+# m.target("fzdm-mh-list","list")
+# m.execute()
+# m.source("fzdm","mh_pic")
+# m.target("fzdm-mh-pic","pic")
+# m.execute()
+# m.source("fzdm","mh_subs")
+# m.target("fzdm-mh-subs","subs")
+# m.execute()
+
+m.source("bitmap","user").target("bitmap","user").execute()
