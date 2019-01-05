@@ -1,19 +1,19 @@
-import di
+import sys 
+sys.path.append("..") 
+from tools import di
 import time
-import tools
 
 
 class BenchMark:
 
     def __init__(self):
         self.di = di.Di()
-        self.tool = tools.Tools()
         self.redis = self.di.getRedis()
         self.mongo = self.di.getMongoDb()
         self.time_limit = 10
 
     def run(self):
-        self.tool.cost("开始")
+        self.di.cost("开始")
         self.last = time.time()
         self.current = time.time()
 
@@ -23,8 +23,8 @@ class BenchMark:
             if self.isFullSec():
                 loop = False
             else:
-                self.redis.set("test_key",n)
-                # self.mongo["test"]["test_data"].insert({"n":n})
+                # self.redis.set("test_key",n)
+                self.mongo["test"]["test_data"].insert_one({"n":n})
                 n += 1
                 self.current = time.time()
 

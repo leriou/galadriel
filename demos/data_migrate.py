@@ -4,24 +4,53 @@ from tools import di
 
 class Migrate():
 
-    def source(self):
-        pass
+    def __init__(self):
+        self.di = di.Di()
+        self.mongo = self.di.getMongoDb()
+        self.es = self.di.getElasticsearch()
+        self.index = None
+        self.type = None
+
+    def source(self, db, collection):
+        self.source_db = db
+        self.source_collection = collection
     
-    def target(self):
-        pass
+    def target(self, index, doc_type):
+        self.index = index
+        self.type = doc_type
     
     def _migrate(self):
-        pass
+        migrate = []
+        for c in self.data:
+            migrate.append({
+                "index":{
+                    "_index":self.index,
+                    "_type":self.type
+                    }
+            })
+            if c["_id"] not None:
+                c["id"] = c["_id"]
+                c.pop("_id")
+            migrate.append(c)
+        self.es.bulk(migrate)
 
     def get_source_data(self):
         self.data = []
-        
+        result = self.mongo[self.source_db][self.source_collection].find({})
+        for n in result:
+            self.data.append(n)        
 
-    def exec(self):
+    def execute(self):
         self.get_source_data()
         self._migrate()
 
-
-
 m = Migrate()
-m.exec()
+m.source("fzdm","mh_list")
+m.target("fzdm-mh-list","list")
+m.execute()
+m.source("fzdm","mh_pic")
+m.target("fzdm-mh-pic","pic")
+m.execute()
+m.source("fzdm","mh_subs")
+m.target("fzdm-mh-subs","subs")
+m.execute()
