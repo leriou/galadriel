@@ -27,10 +27,10 @@ class Migrate():
             migrate.append({
                 "index":{
                     "_index":self.index,
-                    "_type":self.type
+                    "_type":self.type,
+                    "_id": c["_id"].__str__()
                     }
             })     
-            # c["id"] = c["_id"]           
             c.pop("_id")
             migrate.append(c)
         self.es.bulk(migrate)
@@ -46,14 +46,10 @@ class Migrate():
         self.get_source_data()._migrate()
 
 m = Migrate()
-# m.source("fzdm","mh_list")
-# m.target("fzdm-mh-list","list")
-# m.execute()
-# m.source("fzdm","mh_pic")
-# m.target("fzdm-mh-pic","pic")
-# m.execute()
-# m.source("fzdm","mh_subs")
-# m.target("fzdm-mh-subs","subs")
-# m.execute()
+# m.source("fzdm","mh_list").target("fzdm-mh-list","list").execute()
+# m.source("fzdm","mh_pic").target("fzdm-mh-pic","pic").execute()
+# m.source("fzdm","mh_subs").target("fzdm-mh-subs","subs").execute()
 
 m.source("bitmap","user").target("bitmap","user").execute()
+
+# m.source("zgzcw","matches").target("zgzcw","matches").execute()
