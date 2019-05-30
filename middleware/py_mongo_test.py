@@ -1,5 +1,8 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
 from pymongo import MongoClient
 import time
+import json
 
 class MongodbManager():
 
@@ -23,7 +26,24 @@ class MongodbManager():
     def test(self):
         self.init_data()
         self.insert(self.data)
+
+    def bak(self):
+        result =  self.cli["admin"]["private"].find()
+        ret = {}
+        file = "pwd.config"
+        for i in result.rewind():
+            i.pop("_id")
+            ret[i["appname"]] = i
+        with open(file, "w+") as f:
+            # for n in json.dumps(ret, ensure_ascii=False):
+            #     print(n)
+            for n in ret:
+                f.write(n + "\n")
+                ret[n].pop("appname")
+                f.write(json.dumps(ret[n], ensure_ascii=False).strip("{}") + "\n\n")
+        
         
 if __name__ == "__main__":
     n =  MongodbManager()
-    n.test()
+    # n.test()
+    n.bak()

@@ -1,7 +1,5 @@
-# 一些面试题
-
 # 小米面试题
-class Cal:
+class Cal():
 
     def __init__(self):
         self.a = [3, 5, 8, 1, 9, 9]

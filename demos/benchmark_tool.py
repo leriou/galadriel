@@ -10,6 +10,7 @@ class BenchMark:
         self.di = di.Di()
         self.redis = self.di.getRedis()
         self.mongo = self.di.getMongoDb()
+        self.es = self.di.getElasticsearch()
         self.time_limit = 10
 
     def run(self):

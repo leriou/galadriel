@@ -29,13 +29,15 @@ class Migrate():
                     "_index":self.index,
                     "_type":self.type,
                     "_id": c["_id"].__str__()
-                    }
+                    },
+                "timeout":1000000
             })     
             c.pop("_id")
             migrate.append(c)
+
         self.es.bulk(migrate)
                 
-    def get_source_data(self):
+    def get_source_data(self, limit=3000):
         self.data = []
         result = self.mongo[self.source_db][self.source_collection].find({})
         for n in result:
@@ -46,10 +48,4 @@ class Migrate():
         self.get_source_data()._migrate()
 
 m = Migrate()
-# m.source("fzdm","mh_list").target("fzdm-mh-list","list").execute()
-# m.source("fzdm","mh_pic").target("fzdm-mh-pic","pic").execute()
-# m.source("fzdm","mh_subs").target("fzdm-mh-subs","subs").execute()
-
-m.source("bitmap","user").target("bitmap","user").execute()
-
-# m.source("zgzcw","matches").target("zgzcw","matches").execute()
+m.source("zgzcw","data").target("zgzcw","_doc").execute()

@@ -8,7 +8,7 @@ class ElasticsearchManager:
         self.cli = elasticsearch.Elasticsearch(["localhost:9200"])
         self.data = []
         self.index = "test_data"
-        self.type = "doc"
+        self.type = "_doc"
 
     def init_data(self):
         for i in range(0,1000):
