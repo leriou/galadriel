@@ -12,10 +12,11 @@ import time
 依赖注入
 '''
 
+
 class ConfigParser():
 
     def getConfigMap(self, filename):
-        f = open(filename,"r")
+        f = open(filename, "r")
         res = {}
         pSection = r'^\[(.*)\]$'
         pValue = r'^(.*)=(.*)$'
@@ -23,16 +24,17 @@ class ConfigParser():
         sectionName = None
         for line in f.readlines():
             line = line.strip()
-            if re.match(pSection,line):
+            if re.match(pSection, line):
                 sectionName = line.strip("[]")
                 sectionContent = {}.copy()
                 res[sectionName] = sectionContent
-            elif re.match(pValue,line): 
+            elif re.match(pValue, line): 
                 k = line.split("=")[0]
                 v = line.split("=")[1]
                 sectionContent[k] = v
         f.close()
         return res
+
 
 class Di():
 

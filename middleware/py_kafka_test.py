@@ -8,8 +8,8 @@ class KafkaManager:
         self.producer = None
         self.consumer = None
 
-    def str_to_bytes(self,string):
-        return bytes(string,encoding="utf-8")
+    def str_to_bytes(self, sstring):
+        return bytes(string, encoding="utf-8")
 
     def setTopic(self,topic_name):
         self.topic = self.kafka.topics[self.str_to_bytes(topic_name)]
@@ -18,7 +18,7 @@ class KafkaManager:
     def getTopics(self):
         return self.kafka.topics
 
-    def updateTopic(self,meta):
+    def updateTopic(self, meta):
         self.topic.update(meta)
 
     def getLatestAvailableOffsets(self):
@@ -27,7 +27,7 @@ class KafkaManager:
     def getProducer(self):
         return self.topic.get_sync_producer()
     
-    def getConsumer(self,consumer_group):
+    def getConsumer(self, consumer_group):
         return self.topic.get_balanced_consumer(self.str_to_bytes(consumer_group),True)
 
     def test(self):
