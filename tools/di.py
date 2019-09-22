@@ -3,14 +3,14 @@
 
 from pymongo import MongoClient
 import redis
-# import pymysql as mysql
+import pymysql as mysql
 import elasticsearch
 import re
 import time
 
-'''
+"""
 依赖注入
-'''
+"""
 
 
 class ConfigParser():
@@ -42,7 +42,7 @@ class Di():
         Di.redis = None
         Di.mongodb = None
         Di.es = None
-        Di.config = ConfigParser().getConfigMap("/Users/lixiumeng/code/Galadriel/config/config.ini")
+        Di.config = ConfigParser().getConfigMap("/Users/lixiumeng/code/python/Galadriel/config/config.ini")
         self.start = time.time()
         self.end = time.time()
 
@@ -60,12 +60,14 @@ class Di():
             Di.mongodb = MongoClient(config["host"],int(config["port"]))
         return Di.mongodb
 
-    # mysql client
-    # def getMysql(self):
-    #     config = Di.config["mysql"]
-    #     if Di.mysql == None:
-    #         Di.mysql = mysql.connect(host='127.0.0.1', port=3306, user='root', passwd='password')
-    #     return Di.mysql.cursor()
+    """
+    mysql client
+    """
+    def getMysql(self):
+        config = Di.config["mysql"]
+        if Di.mysql == None:
+            Di.mysql = mysql.connect(host='127.0.0.1', port=3306, user='root', passwd='password')
+        return Di.mysql.cursor()
 
     def getElasticsearch(self):
         if Di.es == None:

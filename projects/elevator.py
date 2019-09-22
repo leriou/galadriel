@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''
+"""
 电梯调度算法
 
 功能:
@@ -16,7 +16,7 @@
 2. 中控根据乘客需求和当前电梯的运行,选择电梯,并调整电梯的运行线路
 3. 电梯按照线路运行,到那一层停,每次停都进行上乘客和下乘客的活动
 
-'''
+"""
 import time
 
 
@@ -307,5 +307,4 @@ if __name__ == '__main__':
     c.set_elevator([e1])
     c.set_passenger(clist)
     # c.test()
-    #
     c.run()

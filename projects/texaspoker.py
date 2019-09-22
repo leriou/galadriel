@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import random
 
-'''
+"""
 德州扑克
 
 基本规则:
@@ -44,7 +44,7 @@ import random
 
     score : 6 *1000000 + 12*10000+ 2*100 +13 =  6120213
 
-'''
+"""
 
 class Poker:  # 扑克牌类
 
@@ -148,7 +148,7 @@ class Match():  # 比赛
             self.Report()
             if len(self.table) == self.tablePokerLimit:
                 self.con = 'n'
-                self.check_winner()
+                self.checkWinner()
                 print("亮牌,游戏结束")
             else:
                 self.con = input("是否继续游戏? Y or N\n")
@@ -160,7 +160,7 @@ class Match():  # 比赛
         self.tpk = pokers
         self.cm = len(pokers)
         self.all = []
-        self.c_m_n()  # 生成所有手牌的全排列组合
+        self.cmn()  # 生成所有手牌的全排列组合
         rt = []
         for c in self.all:
             i = self.calculateScore(c)
@@ -171,7 +171,7 @@ class Match():  # 比赛
                 rt = i
         return rt
 
-    def user_report(self, u):  # 玩家报告手牌
+    def userReport(self, u):  # 玩家报告手牌
         print("玩家 %s 亮牌:" % u.id)
         logstr = ''
         for p in (u.hand + self.table):
@@ -182,16 +182,16 @@ class Match():  # 比赛
             [str(n) + " " for n in u.appraise["typecode"]]), u.appraise["pokerscore"]))
         print("")
 
-    def c_m_n(self, st=0, pic=0):  # 从m中取n个数的全排列
+    def cmn(self, st=0, pic=0):  # 从m中取n个数的全排列
         if pic == self.cn:
             self.all.append(self.proccess.copy())
             return self.proccess
         max_n = self.cm - self.cn + pic
         for j in range(st, max_n + 1):
             self.proccess[pic] = self.tpk[j]
-            self.c_m_n(j + 1, pic + 1)
+            self.cmn(j + 1, pic + 1)
 
-    def check_winner(self):  # 检查胜利者
+    def checkWinner(self):  # 检查胜利者
         b = 0
         winner = []
         for u in self.user:
@@ -199,7 +199,7 @@ class Match():  # 比赛
             u.pokers = pi["graphs"]
             u.score = pi["pokerscore"]
             u.appraise = pi
-            self.user_report(u)
+            self.userReport(u)
             if u.score > b:
                 winner = [u]
                 b = u.score

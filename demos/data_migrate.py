@@ -49,3 +49,7 @@ class Migrate():
 
 m = Migrate()
 m.source("zgzcw","data").target("zgzcw","_doc").execute()
+m.source("mh","mh-pics").target("mh-pics","_doc").execute()
+m.source("mh","mh-list").target("mh-lists","_doc").execute()
+m.source("mh","mh-subs").target("mh-subs","_doc").execute()
+

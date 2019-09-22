@@ -98,7 +98,7 @@ class A_Star:
             self.path.append((p.x, p.y))
             p = p.parent
 
-    def is_target(self, i):
+    def is_target(self, i:int) -> bool:
         return i.x == self.e_x and i.y == self.e_y
 
     def get_best(self):
@@ -171,7 +171,7 @@ class A_Star:
                 return i
         return -1
 
-    def is_valid_coord(self, x, y):
+    def is_valid_coord(self, x: int, y: int) -> bool:
         if x < 0 or x >= self.width or y < 0 or y >= self.height:
             return False
         return test_map[y][x] != '#'

@@ -1,12 +1,8 @@
-# 小米面试题
 class Cal():
 
     def __init__(self):
-        self.a = [3, 5, 8, 1, 9, 9]
+        self.a = [3, 5, 8, 1, 5, 9]
         self.now = []
-
-    def putEarn(self, v):
-        self.now.append(v)
 
     def cal_earnings(self):
         tmp = 0
@@ -14,7 +10,7 @@ class Cal():
             if self.a[i] > self.a[i - 1]:
                 earn = self.a[i] - self.a[i - 1]
                 tmp = tmp + earn
-                self.putEarn(tmp)
+                self.now.append(tmp)
             else:
                 tmp = 0
         self.now.sort()
