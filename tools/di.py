@@ -6,14 +6,27 @@ import redis
 import pymysql as mysql
 import elasticsearch
 import re
+import os
 import time
 
 """
 依赖注入
+
+todo:
+1.  设计一个同时支持多种存储的统一的CURD接口层
 """
 
+class Di():
 
-class ConfigParser():
+    configDir = "/../config/config.ini"
+
+    def __init__(self):
+        Di.redis = None
+        Di.mongodb = None
+        Di.es = None
+        Di.config = self.getConfigMap(os.getcwd() + self.configDir)
+        self.start = time.time()
+        self.end = time.time()
 
     def getConfigMap(self, filename):
         f = open(filename, "r")
@@ -34,17 +47,6 @@ class ConfigParser():
                 sectionContent[k] = v
         f.close()
         return res
-
-
-class Di():
-
-    def __init__(self):
-        Di.redis = None
-        Di.mongodb = None
-        Di.es = None
-        Di.config = ConfigParser().getConfigMap("/Users/lixiumeng/code/python/Galadriel/config/config.ini")
-        self.start = time.time()
-        self.end = time.time()
 
     # redis client
     def getRedis(self):
@@ -88,7 +90,6 @@ class Di():
             cli = self.getRedis()
             cli.set("test_file", "redis test success")
             data = cli.get("test_file")
-
         if flag == 'mysql':
             cli = self.getMysql()
             data = 'success'
@@ -121,5 +122,5 @@ class Di():
 
 if __name__ == '__main__':
     m = Di()
-    m.test('mongodb')
-    # print(m.config)
+    # m.test('mongodb')
+    print(m.config)

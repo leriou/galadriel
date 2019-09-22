@@ -17,6 +17,3 @@ Galadriel 是我很喜欢的一个人物角色, 出自<<The Silmarillion>> (精�
 运行: `pipenv run python3 xxxx.py`
 
 > ps: 可以使用 alias prp = pipenv run python3 来简化操作
-
-## 代码列表
-
