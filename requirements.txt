@@ -1,5 +1,5 @@
-pymongo
-redis
+pymongo==3.7.2
+redis==3.0.1
 numpy
 keras
 tensorflow
