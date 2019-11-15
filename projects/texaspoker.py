@@ -66,7 +66,11 @@ class Player:  # 玩家类
         self.hand = []  # 玩家的手牌
         self.pokers = []  # 玩家手牌中最好的一副牌
         self.score = 0  # 玩家的最大分数
+        self.jetton = 0 # 手中的筹码
+        self.risk_limit = {} # 风险偏好
 
+    def getPoker(self):
+        self.hand.append()
 
 class PokerPack:  # 一副扑克牌
 
@@ -105,6 +109,7 @@ class Match():  # 比赛
 
     tablePokerLimit = 5  # 牌桌上最大牌数
     debug = 0  # 是否打印所有玩家的手牌组合
+    default_jetton = 100
 
     def __init__(self, num):
         self.num = num  # 玩家数量
@@ -113,6 +118,8 @@ class Match():  # 比赛
         self.user = []  # 所有玩家
         self.table = []  # 牌桌
         self.userReady()  # 牌桌上的玩家准备
+        self.jetton_pool = 0 # 筹码池
+        self.jetton_detail = {} # 每位玩家的付款比例
 
         # 以下为全排列准备
         self.proccess = [0, 0, 0, 0, 0]
@@ -123,7 +130,9 @@ class Match():  # 比赛
 
     def userReady(self):  # 玩家准备,每个玩家手牌为空
         for n in range(1, self.num + 1):
-            self.user.append(Player(n))
+            p =  Player(n)
+            p.jetton = 100
+            self.user.append(p)
 
     def sendPokerToUser(self, userid):  # 给某用户发牌
         for user in self.user:
@@ -348,7 +357,7 @@ class Match():  # 比赛
                 csp = csp + p.nid
             if p.id in statistic["ep"]:
                 cep = cep + p.nid
-        score = (pokertype * 1000000) + cfp * 10000 + csp * 100 + cep
+        score = pokertype * 1000000 + cfp * 10000 + csp * 100 + cep
         info = {
             "typeNick": typeName,
             "pokertype": pokertype,
