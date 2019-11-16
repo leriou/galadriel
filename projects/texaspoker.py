@@ -152,7 +152,7 @@ class Match():  # 比赛
     def userReady(self):  # 玩家准备,每个玩家手牌为空
         for n in range(1, self.num + 1):
             p =  Player(n)
-            p.jetton = default_jetton + random.random() * 1000 // 1
+            p.jetton = self.default_jetton + random.random() * 1000 // 1
             self.user.append(p)
 
     def sendPokerToUser(self, userid):  # 给某用户发牌
