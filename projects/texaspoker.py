@@ -44,7 +44,19 @@ import random
 
     score : 6 *1000000 + 12*10000+ 2*100 +13 =  6120213
 
+todolist
+
+    - 自动押注
+    - 机器人自动判断是否继续游戏
+
 """
+
+class tools:
+
+    def log(self, level, msg):
+        print("[%s], %s", level, msg)
+
+    
 
 class Poker:  # 扑克牌类
 
@@ -71,6 +83,15 @@ class Player:  # 玩家类
 
     def getPoker(self):
         self.hand.append()
+
+    def report(self):
+        print("玩家 %s 亮牌:" % self.id)
+        logstr = ''
+        for p in self.hand:
+            logstr = logstr + p.color + p.no + ";"
+        print("所有牌: %s" % logstr)
+        print("最好的牌:%s" % (';'.join([n + "" for n in u.pokers])))
+
 
 class PokerPack:  # 一副扑克牌
 
@@ -370,7 +391,7 @@ class Match():  # 比赛
 
 
 '''
-开始
+德州扑克游戏开始
 '''
 
 
