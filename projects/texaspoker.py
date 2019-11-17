@@ -51,13 +51,12 @@ todolist
 
 """
 
-class tools:
+class Tools:
 
     def log(self, level, msg):
-        print("[%s], %s", level, msg)
+        print("[%s] -> %s" % (level, msg))
 
     
-
 class Poker:  # 扑克牌类
 
     def __init__(self, id, no, color):
@@ -80,35 +79,37 @@ class Player:  # 玩家类
         self.score = 0  # 玩家的最大分数
         self.jetton = 0 # 手中的筹码
         self.risk_limit = {} # 风险偏好
+        self.tools = Tools()
 
-    def getPoker(self):
-        self.hand.append()
+    def get_poker(self, p):
+        self.hand.append(p)
 
     def report(self):
-        print("玩家 %s 亮牌:" % self.id)
         logstr = ''
         for p in self.hand:
-            logstr = logstr + p.color + p.no + ";"
-        print("所有牌: %s" % logstr)
-        print("最好的牌:%s" % (';'.join([n + "" for n in u.pokers])))
+            logstr += p.name + ";"
+        self.tools.log("info",
+        "玩家 %s 亮牌: %s \n最好的牌是: %s" 
+        % (self.id, logstr, (';'.join([n + "" for n in self.pokers])
+        )))
 
 
 class PokerPack:  # 一副扑克牌
 
     def __init__(self):
-        self.pack = []
-        self.getPackOfTexasPoker()  # 一副牌
-        self.open = self.pack  # 未使用过的牌
+        self.open = self._init_unused_poker()  # 创建一副未使用的牌
         self.close = []  # 使用过的牌
 
-    def getPackOfTexasPoker(self):  # 构建一副未被使用的德州扑克牌
+    def _init_unused_poker(self):  # 构建一副未被使用的德州扑克牌
+        unused = [] 
         pid = 1  # poker的id
         for no in range(1, 14):  # 德州扑克不含大小鬼
             for color in range(0, 4):
-                pid = pid + 1
-                self.pack.append(Poker(pid, no, color))
+                pid += 1
+                unused.append(Poker(pid, no, color))
+        return unused
 
-    def delFromPokers(self, poker, pokers):  # 从一副牌中删除一张牌
+    def del_from_pokers(self, poker, pokers):  # 从一副牌中删除一张牌
         for idx, i in enumerate(pokers):
             if i.name == poker.name:
                 pokers.pop(idx)
@@ -116,19 +117,16 @@ class PokerPack:  # 一副扑克牌
             else:
                 continue
 
-    def closePoker(self, poker):  # 将一张牌添加到一个使用过的牌库中
-        self.close.append(poker)
-
-    def getPoker(self):  # 从该副牌中获取一张牌
+    def get_poker(self):  # 从该副牌中获取一张牌
         poker = random.choice(self.open)  # 从未使用的牌中随即一张
-        self.delFromPokers(poker, self.open)  # 将其从未使用的牌库中移入已使用的牌库
-        self.closePoker(poker)
+        self.del_from_pokers(poker, self.open)  # 将其从未使用的牌库中移入已使用的牌库
+        self.close.append(poker)
         return poker
 
 
 class Match():  # 比赛
 
-    tablePokerLimit = 5  # 牌桌上最大牌数
+    table_poker_limit = 5  # 牌桌上最大牌数
     debug = 0  # 是否打印所有玩家的手牌组合
     default_jetton = 100
 
@@ -136,11 +134,10 @@ class Match():  # 比赛
         self.num = num  # 玩家数量
         self.pack = PokerPack()  # 生成一副牌
         self.used = self.pack.close
-        self.user = []  # 所有玩家
+        self.user = self._init_user()
         self.table = []  # 牌桌
-        self.userReady()  # 牌桌上的玩家准备
         self.jetton_pool = 0 # 筹码池
-        self.jetton_detail = {} # 每位玩家的付款比例
+        self.jetton_detail = {} # 每位玩家的风险偏好
 
         # 以下为全排列准备
         self.proccess = [0, 0, 0, 0, 0]
@@ -149,37 +146,43 @@ class Match():  # 比赛
         self.tpk = [2, 3, 4, 5, 7, 8, 9]
         self.all = []
 
-    def userReady(self):  # 玩家准备,每个玩家手牌为空
-        for n in range(1, self.num + 1):
-            p =  Player(n)
-            p.jetton = self.default_jetton + random.random() * 1000 // 1
-            self.user.append(p)
+        self.tools = Tools()
 
-    def sendPokerToUser(self, userid):  # 给某用户发牌
+    def _init_user(self):  # 玩家准备,每个玩家手牌为空
+        users = []
+        for n in range(1, self.num + 1):
+            p = Player(n)
+            p.jetton = self.default_jetton + random.random() * 1000 // 1
+            users.append(p)
+        return users
+
+    def send_poker_to_user(self, userid):  # 给某用户发牌
         for user in self.user:
             if user.id == userid:
-                user.hand.append(self.pack.getPoker())
+                user.get_poker(self.pack.get_poker())
 
-    def sendPokerToTable(self, n):  # 亮n张牌
+    def send_poker_to_table(self, n):  # 亮n张牌
         if n < 1:
             n = 1
+        elif n > 10:
+            return
         for i in range(0, n):
-            self.table.append(self.pack.getPoker())
+            self.table.append(self.pack.get_poker())
 
-    def Start(self):  # 比赛开始
+    def start(self):  # 比赛开始
         for uid in range(1, self.num + 1):  # 给每个用户发第一张牌
-            self.sendPokerToUser(uid)
+            self.send_poker_to_user(uid)
         for uid in range(1, self.num + 1):  # 给每个用户发第二张牌
-            self.sendPokerToUser(uid)
-        self.sendPokerToTable(2)  # 牌桌两张牌
+            self.send_poker_to_user(uid)
+        self.send_poker_to_table(2)  # 牌桌两张牌
         self.con = 'y'
         while self.con == 'y':
-            self.sendPokerToTable(1)
-            self.Report()
-            if len(self.table) == self.tablePokerLimit:
+            self.send_poker_to_table(1)
+            self.report()
+            if len(self.table) >= self.table_poker_limit:
                 self.con = 'n'
-                self.checkWinner()
-                print("亮牌,游戏结束")
+                self.check_winner()
+                self.log("info", "游戏结束，亮牌了！！")
             else:
                 self.con = input("是否继续游戏? Y or N\n")
 
@@ -193,25 +196,14 @@ class Match():  # 比赛
         self.cmn()  # 生成所有手牌的全排列组合
         rt = []
         for c in self.all:
-            i = self.calculateScore(c)
-            if self.debug == 1:
-                print(i)
+            i = self.calculate_score(c)
+            self.log("debug", i)
             if i["pokerscore"] >= max_score:
                 max_score = i["pokerscore"]
                 rt = i
         return rt
 
-    def userReport(self, u):  # 玩家报告手牌
-        print("玩家 %s 亮牌:" % u.id)
-        logstr = ''
-        for p in (u.hand + self.table):
-            logstr = logstr + p.color + p.no + ";"
-        print("所有牌: %s" % logstr)
-        print("最好的牌:%s" % (';'.join([n + "" for n in u.pokers])))
-        print("牌型: %s;type [%s] 分数: %s" % (u.appraise["typeNick"], ''.join(
-            [str(n) + " " for n in u.appraise["typecode"]]), u.appraise["pokerscore"]))
-        print("")
-
+ 
     def cmn(self, st=0, pic=0):  # 从m中取n个数的全排列
         if pic == self.cn:
             self.all.append(self.proccess.copy())
@@ -221,41 +213,41 @@ class Match():  # 比赛
             self.proccess[pic] = self.tpk[j]
             self.cmn(j + 1, pic + 1)
 
-    def checkWinner(self):  # 检查胜利者
-        b = 0
+    def check_winner(self):  # 检查胜利者
+        max_score = 0
         winner = []
         for u in self.user:
             pi = self.showhand(u.hand + self.table)
             u.pokers = pi["graphs"]
             u.score = pi["pokerscore"]
             u.appraise = pi
-            self.userReport(u)
-            if u.score > b:
+            u.report()
+            if u.score > max_score:
                 winner = [u]
-                b = u.score
-            elif u.score == b:
+                max_score = u.score
+            elif u.score == max_score:
                 winner.append(u)
 
-        print("胜利者是:")
+        self.log("info","胜利者是:")
         for u in winner:
-            print("玩家 %s : 获胜牌型:" % u.id)
-            print(u.pokers)
+            self.log("info","玩家 %s 获胜牌型: %s" % (u.id, u.pokers))
 
-    def Report(self):  # 报告当前比赛局势
-        log = "台桌上的牌:"
+    def report(self):  # 报告当前比赛局势
+        msg = "台桌上的牌:"
         # 报牌桌上的手牌
         for id, a in enumerate(self.table):
-            log = log + a.name + ";"
-        print(log)
-        print("本次比赛已使用%s张牌" % len(self.used))
+            msg += a.name + "  "
+        self.log("info",
+            "%s \n 本次比赛已使用%s张牌" % (msg, len(self.used))
+            )
 
-    def printPoker(self, ps, title="这副牌"):
-        log = title + ':'
-        for p in ps:
-            log = log + p.name + ";"
-        print(log)
-
-    def calculateScore(self, pokers):  # 计算手牌的得分
+    def print_poker(self, pokers, title="这副牌"):
+        msg = title + ':'
+        for p in pokers:
+            msg += p.name + ";"
+        self.log("info", msg)
+        
+    def calculate_score(self, pokers):  # 计算手牌的得分
         if len(pokers) < 5:  # 不足5张牌得分为 0
             return False
         # self.printPoker(pokers, "参与计算分数的牌")
@@ -389,6 +381,11 @@ class Match():  # 比赛
         }
         return info
 
+    def log(self, level, msg):
+        if self.debug == 0 and level == 'debug':
+            return False
+        self.tools.log(level, msg)
+
 
 '''
 德州扑克游戏开始
@@ -400,4 +397,4 @@ if __name__ == '__main__':
     while players < 2 or players > 10:
         players = int(input("玩家数量非法,请重新输入玩家数量:"))
     m = Match(players)
-    m.Start()
+    m.start()
