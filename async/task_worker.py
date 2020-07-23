@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import time, sys, queue
+import time
+import sys
+import queue
 from multiprocessing.managers import BaseManager
 
 # 创建类似的QueueManager:
+
+
 class QueueManager(BaseManager):
     pass
+
 
 # 由于这个QueueManager只从网络上获取Queue，所以注册时只提供名字:
 QueueManager.register('get_task_queue')

@@ -1,7 +1,7 @@
-import sys 
-sys.path.append("..") 
-from tools import di
 import time
+from tools import di
+import sys
+sys.path.append("..")
 
 
 class BenchMark:
@@ -25,7 +25,7 @@ class BenchMark:
                 loop = False
             else:
                 # self.redis.set("test_key",n)
-                self.mongo["test"]["test_data"].insert_one({"n":n})
+                self.mongo["test"]["test_data"].insert_one({"n": n})
                 n += 1
                 self.current = time.time()
 
@@ -35,6 +35,7 @@ class BenchMark:
             return True
         else:
             return False
+
 
 m = BenchMark()
 m.run()

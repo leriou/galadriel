@@ -1,24 +1,25 @@
 
-import sys 
-sys.path.append("..") 
 from tools import di
+import sys
+sys.path.append("..")
+
 
 class DistributeLock:
 
     def __init__(self):
         self.redis = di.Di().getRedis()
 
-    def lock(self,key):
-        if self.redis.setnx(key,1):
-            self.redis.expire(key,300)
+    def lock(self, key):
+        if self.redis.setnx(key, 1):
+            self.redis.expire(key, 300)
             return True
         else:
             return False
 
-    def unlock(self,key):
-        self.redis.expire(key,-1)
+    def unlock(self, key):
+        self.redis.expire(key, -1)
         return True
-    
+
 
 lock = DistributeLock()
 

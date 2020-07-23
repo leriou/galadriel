@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import random, time, queue
+import random
+import time
+import queue
 from multiprocessing.managers import BaseManager
 
 # 发送任务的队列:
@@ -10,8 +12,11 @@ task_queue = queue.Queue()
 result_queue = queue.Queue()
 
 # 从BaseManager继承的QueueManager:
+
+
 class QueueManager(BaseManager):
     pass
+
 
 # 把两个Queue都注册到网络上, callable参数关联了Queue对象:
 QueueManager.register('get_task_queue', callable=lambda: task_queue)

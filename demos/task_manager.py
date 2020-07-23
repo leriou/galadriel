@@ -3,7 +3,9 @@
 
 import multiprocessing as mul
 from multiprocessing import Pool
-import os, time, random
+import os
+import time
+
 
 class TaskManager:
 
@@ -15,21 +17,21 @@ class TaskManager:
         if n <= 0:
             return a
         return self.spfib(n - 1, b, a + b)
-        
+
     @staticmethod
-    def long_time_task(self,name):
+    def long_time_task(self, name):
         print('Run task %s (%s)...' % (name, os.getpid()))
         start = time.time()
         time.sleep(4)
         end = time.time()
         print('Task %s runs %0.2f seconds.' % (name, (end - start)))
-    
+
     def multi_proccess(self):
         print('Parent process %s.' % os.getpid())
         p = Pool(2)
         for i in range(5):
-            p.apply_async(TaskManager.long_time_task,args=(self,i))
-            
+            p.apply_async(TaskManager.long_time_task, args=(self, i))
+
         print('Waiting for all subprocesses done...')
         p.close()
         p.join()
