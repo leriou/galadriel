@@ -3,6 +3,7 @@
 import math
 import time
 
+
 class Calculator:
 
     def __init__(self):

@@ -3,6 +3,7 @@
 
 import fire
 
+
 class Nqueen:
 
     def __init__(self, n):

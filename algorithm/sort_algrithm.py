@@ -106,6 +106,7 @@ class SortAlgorithm:
 class T(SortAlgorithm):
     pass
 
+
 if __name__ == '__main__':
     m = T()
     m.mergesort()

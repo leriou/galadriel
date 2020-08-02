@@ -2,6 +2,7 @@ import elasticsearch
 import time
 import uuid
 
+
 class ElasticsearchManager:
 
     def __init__(self):
@@ -11,11 +12,11 @@ class ElasticsearchManager:
         self.type = "_doc"
 
     def init_data(self):
-        for i in range(0,1000):
+        for i in range(0, 1000):
             info = {
-                "id":uuid.uuid1(),
-                "time":time.time(),
-                "name": str(i) +"ming",
+                "id": uuid.uuid1(),
+                "time": time.time(),
+                "name": str(i) + "ming",
                 "age": 9
             }
             self.data.append(info)
@@ -28,22 +29,23 @@ class ElasticsearchManager:
         bulk = []
         for c in self.data:
             bulk.append({
-                "index":{
-                    "_index":self.index,
-                    "_type":self.type
-                    }
+                "index": {
+                    "_index": self.index,
+                    "_type": self.type
+                }
             })
             bulk.append(c)
         self.cli.bulk(bulk)
 
     def search(self):
-        print(self.cli.search(index=self.index, doc_type=self.type,body={"query":{"match_all":{}},"size":20} ))
+        print(self.cli.search(index=self.index, doc_type=self.type,
+                              body={"query": {"match_all": {}}, "size": 20}))
 
     def test(self):
         self.init_data()
         self.bulk()
         self.search()
-    
+
 
 if __name__ == "__main__":
     e = ElasticsearchManager()

@@ -35,6 +35,7 @@ class MoveZero:
                 pos += 1
         print(arr)
 
+
 if __name__ == '__main__':
     m = MoveZero()
     m.move([0, 1, 2, 0, 4, 6])

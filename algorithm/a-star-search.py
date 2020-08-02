@@ -41,6 +41,7 @@ test_map = []
 
 #########################################################
 
+
 class Node_Elem:
     """
     开放列表和关闭列表的元素类型，parent用来在成功的时候回溯路径
@@ -98,7 +99,7 @@ class A_Star:
             self.path.append((p.x, p.y))
             p = p.parent
 
-    def is_target(self, i:int) -> bool:
+    def is_target(self, i: int) -> bool:
         return i.x == self.e_x and i.y == self.e_y
 
     def get_best(self):
@@ -254,6 +255,7 @@ def find_path():
     print("searched squares count is %d" % (len(searched)))
     # 标记开始、结束点
     mark_start_end(s_x, s_y, e_x, e_y)
+
 
 if __name__ == "__main__":
     # 开始时间

@@ -64,11 +64,10 @@ class Di():
             Di.mongodb = MongoClient(config["host"], int(config["port"]))
         return Di.mongodb
 
-    """
-    mysql client
-    """
-
     def getMysql(self):
+        """
+        get mysql conn
+        """
         config = Di.config["mysql"]
         if Di.mysql == None:
             Di.mysql = mysql.connect(
@@ -80,30 +79,8 @@ class Di():
             Di.es = elasticsearch.Elasticsearch(["localhost:9200"])
         return Di.es
 
-    def test(self, flag):
-        if flag == 'es':
-            cli = self.getElasticsearch()
-            cli.index(index="test", doc_type="match",
-                      body={"name": "test", "age": 10})
-            data = cli.search(index="test", doc_type="match", body={
-                              "query": {"match_all": {}}, "size": 2})
-        if flag == 'mongodb':
-            cli = self.getMongoDb()
-            db = cli.test.test
-            db.insert({"test": "success"})
-            data = db.find_one()
-        if flag == 'redis':
-            cli = self.getRedis()
-            cli.set("test_file", "redis test success")
-            data = cli.get("test_file")
-        if flag == 'mysql':
-            cli = self.getMysql()
-            sql = "select * from jike.t limit 10"
-            cli.execute(sql)
-            data = cli.fetchall()
-        print(data)
-
     # 往某文件写入内容
+
     def log(self, filename, content):
         fh = open(filename, "w+")
         fh.write(content)
@@ -126,9 +103,3 @@ class Di():
 
     def logging(self, level, msg):
         print("%s [%s]: %s" % (self.get_time(), level, msg))
-
-
-if __name__ == '__main__':
-    m = Di()
-    m.test('mysql')
-    # print(m.config)
