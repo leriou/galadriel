@@ -1,10 +1,22 @@
+from dis import dis
 import random
-from sklearn import neural_network 
+from sklearn import tree
+from sklearn import ensemble
+from sklearn.neural_network import MLPClassifier
+from sklearn import linear_model
+from sklearn import svm
+from sklearn.naive_bayes import GaussianNB
 
 def ml_predict_discard(tower, discard_top):
-    return random.randint(0,1)
+    count_map = ml_get_result(tower, discard_top)
+    if max(count_map.values()) >= 3:
+        return random.randint(0, 1000) < 700
+    else:
+        return random.randint(0, 1000) < 500
 
-def mk_predict_replaced(tower, new_brick):
+def ml_get_result(tower, new_brick):
+    t = tower[:] 
+    t.append(new_brick)
     def read_train_data(file_name):
         x = []
         y = []
@@ -15,14 +27,37 @@ def mk_predict_replaced(tower, new_brick):
                 y.append(int(ns[len(ns)-1].strip()))
             f.close()
         return (x,y)
-
     (x,y) = read_train_data("./record.csv")
-    clf = neural_network.MLPClassifier(hidden_layer_sizes=3, activation="relu",max_iter=300)
-    clf.fit(x,y)
-    t = tower[:] 
-    t.append(new_brick)
-    predict_result = clf.predict([t])
-    return predict_result[0]
+    def get_predict_result(x, y):
+        model_list = [
+            tree.DecisionTreeClassifier(),
+            ensemble.RandomForestClassifier(random_state=1),
+            MLPClassifier(random_state=1,max_iter=400),
+            linear_model.BayesianRidge(),
+            svm.SVC(),
+            GaussianNB()
+        ]
+        count_map = {}
+        idx = 0
+        for model in model_list:
+            model.fit(x,y)
+            predict_result = model.predict([t])
+            idx+=1
+            ans = round(predict_result[0])
+            # print("【debug】 %s predict %s" %  ( idx, ans))
+            if ans in count_map:
+                count_map[ans] += 1
+            else:
+                count_map[ans] = 1
+        return count_map
+    return get_predict_result(x,y)
+
+def mk_predict_replaced(tower, new_brick):
+    count_map = ml_get_result(tower, new_brick)
+    # print("【debug】%s " % count_map)
+    for i in count_map:
+        if count_map[i] == max(count_map.values()):
+            return i
 
 def train_log(tower, brick, brick_replaced):
     train_file = "./record.csv"
@@ -45,7 +80,7 @@ def check_bricks(main_pile, discard_pile):
     if len(main_pile) == 0:
         random.shuffle(discard_pile)
         main_pile,discard_pile = discard_pile,main_pile
-        add_brick_to_discard(get_top_brick(main_pile))
+        add_brick_to_discard(get_top_brick(main_pile), discard_pile)
 
 def check_tower_blaster(tower):
     for i in range(0, len(tower)-1):
@@ -86,6 +121,7 @@ def computer_play(tower, main_pile, discard_pile):
     brick = get_top_brick(target_pile)
     replaced_index = mk_predict_replaced(tower, brick)  
     replace_brick = tower[replaced_index]
+    print("【debug】computer's tower %s will use %s replaced %s" % (tower, brick, replace_brick))
     if find_and_replace(brick, replace_brick, tower, discard_pile):
         print("The computer picked %s from %s pile" % (brick, brick_from))
     return tower
@@ -94,7 +130,7 @@ def choose_pile(tower, discard_pile, main_pile):
     """
     retrun  pile, discription
     """
-    if len(discard_pile) > 1 and ml_predict_discard(tower, discard_pile[0]) == 1:
+    if len(discard_pile) > 1 and ml_predict_discard(tower, discard_pile[0]):
         return (discard_pile, "discard")
     else:
         return (main_pile, "main")
@@ -149,12 +185,14 @@ def main():
     running = True
     while running:
         computer_tower = computer_play(computer_tower,main_piles,discard_piles)
+        check_bricks(main_piles, discard_piles)
         if check_tower_blaster(computer_tower):
             running = False
             print("computer win !!!")
             print("computer tower is %s" % computer_tower)
             return 
         human_tower = human_play(human_tower, main_piles, discard_piles)
+        check_bricks(main_piles, discard_piles)
         if check_tower_blaster(human_tower):
             running = False
             print("you Win !!!")
