@@ -1,46 +1,42 @@
-from pykafka import KafkaClient,Cluster
+from kafka import KafkaProducer, KafkaConsumer
+from kafka.errors import kafka_errors
+import traceback
+import json
 
-class KafkaManager:
 
-    def __init__(self):
-        self.hosts = "127.0.0.1:9092"
-        self.kafka = KafkaClient(self.hosts)
-        self.producer = None
-        self.consumer = None
+def producer_demo():
+    # 假设生产的消息为键值对（不是一定要键值对），且序列化方式为json
+    producer = KafkaProducer(
+        bootstrap_servers=['localhost:9092'], 
+        key_serializer=lambda k: json.dumps(k).encode(),
+        value_serializer=lambda v: json.dumps(v).encode())
+    # 发送三条消息
+    for i in range(0, 3):
+        future = producer.send(
+            'kafka_demo',
+            key='count_num',  # 同一个key值，会被送至同一个分区
+            value=str(i),
+            partition=0)  # 向分区1发送消息
+        print("send {}".format(str(i)))
+        try:
+            future.get(timeout=10) # 监控是否发送成功           
+        except kafka_errors:  # 发送失败抛出kafka_errors
+            traceback.format_exc()
 
-    def str_to_bytes(self, sstring):
-        return bytes(string, encoding="utf-8")
 
-    def setTopic(self,topic_name):
-        self.topic = self.kafka.topics[self.str_to_bytes(topic_name)]
-        return self.topic
+# def consumer_demo():
+#     consumer = KafkaConsumer(
+#         'kafka_demo', 
+#         bootstrap_servers='127.0.0.1:9092',
+#         group_id='test'
+#     )
+#     for message in consumer:
+#         print("receive, key: {}, value: {}".format(
+#             message.key,
+#             message.value
+#             )
+#         )
 
-    def getTopics(self):
-        return self.kafka.topics
+# consumer_demo()
 
-    def updateTopic(self, meta):
-        self.topic.update(meta)
-
-    def getLatestAvailableOffsets(self):
-        return self.topic.latest_available_offsets()
-
-    def getProducer(self):
-        return self.topic.get_sync_producer()
-    
-    def getConsumer(self, consumer_group):
-        return self.topic.get_balanced_consumer(self.str_to_bytes(consumer_group),True)
-
-    def test(self):
-        self.setTopic('py-topic')
-        p = self.getProducer()
-        for i in range(101,10000):
-            p.produce(self.str_to_bytes("this is msg:" + str(i)))
-        p.stop()
-
-        c = self.getConsumer("consumer-py3")
-        for i in c:
-            print("offset: "+str(i.offset)+" value: "+str(i.value))    
-
-if __name__ == "__main__":
-    m = KafkaManager()
-    m.test()
+producer_demo()
